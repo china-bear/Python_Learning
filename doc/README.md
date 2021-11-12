@@ -179,4 +179,8 @@ a, *b, c = a, b, *c = 0, 1
 # d = 4
 ```
 
+## Python logging
+
+*[日志基础教程](https://docs.python.org/zh-cn/3.7/howto/logging.html)
+
 * [Python 教程¶](https://docs.python.org/zh-cn/3.9/tutorial/index.html)

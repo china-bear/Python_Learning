@@ -27,6 +27,7 @@ class Student(object):
         else:
             return 'C'
 
+
 bart = Student('Bart Simpson', 59)
 print('bart.get_name() =', bart.get_name())
 bart.set_score(60)

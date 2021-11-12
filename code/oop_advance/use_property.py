@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 class Student(object):
-
+    # Python内置的@property装饰器 负责把一个方法变成属性调用
     @property
     def score(self):
         return self._score
@@ -14,6 +14,7 @@ class Student(object):
         if value < 0 or value > 100:
             raise ValueError('score must between 0 ~ 100!')
         self._score = value
+
 
 s = Student()
 s.score = 60

@@ -18,6 +18,10 @@ class Student(object):
         else:
             return 'C'
 
+    def __str__(self):
+        return "%s is a %s" % (self.name, self.score)
+
+
 bart = Student('Bart Simpson', 59)
 lisa = Student('Lisa Simpson', 87)
 
@@ -27,3 +31,5 @@ bart.print_score()
 
 print('grade of Bart:', bart.get_grade())
 print('grade of Lisa:', lisa.get_grade())
+
+print(bart.__str__())
