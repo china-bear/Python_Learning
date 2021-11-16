@@ -22,8 +22,8 @@ Anaconda2-2019.07-Windows-x86_64.exe
 
 ## __init__.py的设计原则
 
-> _init__.py的原始使命是声明一个模块, 所以它可以是一个空文件, 在__init__.py中声明的所有类型和变量, 就是其代表的模块的类型和变量, 
-> 在Python工程里, 当python检测到一个目录下存在__init__.py文件时, python就会把它当成一个模块(module). Module跟C＋＋的命名空间和Java的Package的概念很像, 都是为了科学地组织化工程, 管理命名空间
+> _init__.py 标识该目录是一个python包(package), 它可以是一个空文件, 在__init__.py中声明的所有类型和变量, 就是其代表的模块的类型和变量, 
+> 在Python工程里, 当python检测到一个目录下存在__init__.py文件时, python就会把目录当成一个包(package). package跟C＋＋的命名空间和Java的Package的概念很像, 都是为了科学地组织化工程, 管理命名空间
 > 在利用__init__.py时, 应该遵循如下几个原则:
 
 1. 不要污染现有的命名空间. 模块一个目的, 是为了避免命名冲突, 如果你在种用__init__.py时违背这个原则, 是反其道而为之, 就没有必要使用模块了. 
@@ -32,6 +32,22 @@ Anaconda2-2019.07-Windows-x86_64.exe
 
 3. 只在__init__.py中导入有必要的内容, 不要做没必要的运算. 像我们的例子, import arithmetic语句会执行__ini__.py中的所有代码. 如果我们在__init__.py中做太多事情, 每次import都会有额外的运算, 会造成没有必要的开销. 一句话, __init__.py只是为了达到B中所表述的目的, 其它事情就不要做啦. 
 
+## python模块导入顺序
+
+1. 系统包 > 同目录 > sys.path
+2. 当导入包时: _init_会先执行
+3. 当导入一个模块时: 模块的顶层变量会被执行, 包括全局变量, 类以及函数的声明(类对象, 函数对象将被创建, 不会被调用), 因此在编写模块时一定要注意消除副作用(函数的调用)
+4. sys.modules: 是存放已载入模块的地方, 模块一经载入python 会把这个模块加入 sys.modules 中供下次载入使用, 这样可以加速模块的引入起到缓存的作用
+```python
+import sys
+import os
+# 动态获取所有已加载模块目录和路径
+def get_module_dir(name):
+    path = getattr(sys.modules[name], '__file__', None)
+    if not path:
+        raise AttributeError('module %s has not attribute __file__'%name)
+    return os.path.dirname(os.path.abspath(path))
+```
 
 
 ## Python  _, __ 和 __xx__的区别
@@ -76,7 +92,7 @@ b.test()    # I am test in A
 ```
 
 3. "__ xx __" 前后双下划线
-> 方法被称为magic methods(魔术方法), 一般是系统定义名字,类似于__init__(),一般是用于 Python调用
+> 方法被称为magic methods(魔术方法), 一般是系统定义名字,类似于__init__(), __del__() 一般是用于 Python调用
 
 ```python
 class WrongMethod(object):

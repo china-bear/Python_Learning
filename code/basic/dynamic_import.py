@@ -16,6 +16,7 @@ import urllib.request as urllib2
 
 # Python dynamic import - how to import * from module name from variable?
 # https://www.oreilly.com/library/view/python-cookbook/0596001673/ch15s04.html
+# https://segmentfault.com/a/1190000018032094 【Python Package Import 之痛】
 # Python动态导入模块  方式一: __import__  built-in function
 def importName(module_name, class_name):
     """ Import a named object from a module in the context of this function.
@@ -33,6 +34,20 @@ print(sys.path)
 
 # sys.meta_path 存放的是所有的查找器
 print(sys.meta_path)
+
+# 模块文件的路径名: 以相对路径执行__file__是相对路径, 以绝对路径执行__file__是绝对路径
+print(__file__)
+
+# 为了保证__file__每次都能准确得到模块的正确位置,最好再取一次绝对路径os.path.abspath(__file__)
+print(os.path.abspath(__file__))
+
+# 动态获取所有已加载模块目录和路径
+def get_module_dir(name):
+    path = getattr(sys.modules[name], '__file__', None)
+    if not path:
+        raise AttributeError('module %s has not attribute __file__' % name)
+    return os.path.dirname(os.path.abspath(path))
+
 
 for ext in 'spam', 'eggs':
     HandlerClass = importName("package.extensions." + ext, "Handler")
@@ -80,7 +95,6 @@ else:  # 没有则设置
 
 f.add_func()
 f.Animal.run()
-
 
 
 # my_importer.py

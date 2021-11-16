@@ -1,0 +1,2 @@
+dev_cfg = {'host': '10.172.xxx.xxx', 'port': 3301, 'user': 'admin', 'password': 'admin@123456', 'database': 'test_db'}
+prod_cfg = {'host': '10.172.xxx.xxx', 'port': 3301, 'user': 'admin', 'password': 'admin@123456', 'database': 'test_db'}
