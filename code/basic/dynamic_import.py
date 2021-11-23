@@ -29,7 +29,14 @@ def importName(module_name, class_name):
     return vars(module)[class_name]
 
 
-# sys.path 列出 Python 模块查找的目录列表
+# 一个模块被另一个程序第一次引入时, 其主程序将运行, 如果想在模块被引入时, 模块中的程序块不执行，我们可以用__name__ 属性来使该程序块仅在该模块自身运行时执行
+# 每个模块都有一个__name__属性，当其值是'__main__'时，表明该模块自身在运行, 否则是被引入
+if __name__ == '__main__':
+    print('程序自身在运行')
+else:
+    print('我来自另一模块')
+
+# sys.path 列出 Python 模块查找的目录列表, 一个模块只会被导入一次, 不管执行了多少次 import
 print(sys.path)
 
 # sys.meta_path 存放的是所有的查找器
@@ -40,6 +47,35 @@ print(__file__)
 
 # 为了保证__file__每次都能准确得到模块的正确位置,最好再取一次绝对路径os.path.abspath(__file__)
 print(os.path.abspath(__file__))
+
+# 内置的函数dir()用来查询一个类或者对象所有属性, 以一个字符串列表的形式返回
+dir()
+
+# help()函数帮助了解模块、类型、对象、方法、属性的详细信息
+help()
+
+print('------------------------------------------------')
+
+f = importName("package.extensions.cat", 'Cat')
+
+f.eat()
+f.play()
+
+print('------------------------------------------------')
+
+try:
+    f = importlib.import_module('package.extensions.cat')
+
+    f.run()
+    print(f.age)
+    f.eat()
+    f.Cat.play()
+except ModuleNotFoundError as e:
+    print(e.msg)
+else:
+    print(f.age)
+print('------------------------------------------------')
+
 
 # 动态获取所有已加载模块目录和路径
 def get_module_dir(name):

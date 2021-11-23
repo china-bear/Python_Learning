@@ -25,3 +25,24 @@
 
 
 [mysql客户端python下性能比较](https://cloud.tencent.com/developer/article/1399154)
+
+
+wget https://www.python.org/ftp/python/3.7.9/Python-3.7.9.tgz
+tar -xzf Python-3.7.9.tgz
+sudo ./configure prefix=/usr/local/python3
+sudo mkdir /usr/local/python3
+sudo make 
+sudo make install
+sudo ln -s /usr/local/python3/bin/python3 /usr/bin/python3
+sudo ln -s /usr/local/python3/bin/pip3 /usr/bin/pip3
+sudo pip3 install thrift -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
+sudo pip3 install sasl -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
+sudo pip3 install thrift-sasl -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
+sudo pip3 install pyhive -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
+sudo pip3 install mysqlclient
+sudo pip3 install pymysql -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
+sudo pip3 install sshtunnel -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
+sudo pip3 install virtualenv -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
+sudo pip3 install bpython -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
+sudo ln -s /usr/local/python3/bin/virtualenv /usr/bin/virtualenv
+sudo ln -s /usr/local/python3/bin/bpython /usr/bin/bpython
