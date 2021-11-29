@@ -21,6 +21,7 @@ def work():
         print("...工作中...")
 
 
+
 if __name__ == '__main__':
     # 主进程(由操作系统创建)
     work()
