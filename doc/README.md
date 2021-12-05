@@ -53,10 +53,13 @@ def get_module_dir(name):
 ## Python  _, __ 和 __xx__的区别
 
 1. "_" 单下划线
-> Python中是不存在真正的私有方法的, 但是为了实现类似于c++中的私有方法, 于是就在类的方法或者属性前加一个"_", 意味着该方法或者属性就不应该被调用, 这个只是出于某种约定, 我们一般不去调用, 实际上这个方法是能被调用
+> Python中是不存在真正的私有的 成员 或者 方法的, 但是为了实现类似于c++中的私有 成员 或者 方法, 于是就在类的成员 或者 方法或者属性前加一个"_", 意味着该方法或者属性就不应该被调用,
+>  这个只是出于某种君子约定, 我们一般不去调用, 实际上这个方法是能被调用
 
 ```python
 class A(object):
+    _age = 100
+
     def _test(self):
         print("这个函数不应该通过_test调用，而应该通过test调用")
 
@@ -65,23 +68,32 @@ class A(object):
 a = A()
 a._test()  # 这个函数不应该通过_test调用，而应该通过test调用
 a.test()   # 这个函数不应该通过_test调用，而应该通过test调用
+print(a._age)
 ```
 
 2. “__” 双下划线
-> 双下划线表示的是私有类型的变量, 不允许子类访问, 也不能被子类重写, 只允许类(self)自身内部访问
+> 双下划线表示的是私有类型的变量 或者 方法, 不允许子类访问, 也不能被子类重写, 只允许类(self)自身内部访问
 
 ```python
 class A(object):
+    
+    __age = 18
+    
     def __test(self):
         print("I am test in A")
 
     def test(self):
         return self.__test()
+    
+    def getAge(self):
+        return  self.__age
+
 
 
 a = A()
 a.test()
-
+print(a.__age)
+print(a.getAge())
 class B(A):
     def __test(self):
         print("I am test in B")
@@ -93,6 +105,7 @@ b.test()    # I am test in A
 
 3. "__ xx __" 前后双下划线
 > 方法被称为magic methods(魔术方法), 一般是系统定义名字,类似于__init__(), __del__() 一般是用于 Python调用
+> __定义的私用属性，实际是变成： _类名__属性，  可以使用这张特殊的调用 私用属性变量
 
 ```python
 class WrongMethod(object):

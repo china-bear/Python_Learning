@@ -32,6 +32,9 @@ print(c.__dict__, '\n', c.__dir__(), '\n', c.__repr__())
 print('a is Animal?', isinstance(a, Animal))
 print('a is Dog?', isinstance(a, Dog))
 print('a is Cat?', isinstance(a, Cat))
+# 检测一个类是否是另一个类的子类
+print(issubclass(Dog, Animal))
+
 
 print('d is Animal?', isinstance(d, Animal))
 print('d is Dog?', isinstance(d, Dog))

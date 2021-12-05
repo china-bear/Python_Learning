@@ -69,7 +69,7 @@ outer()
 
 ```
 
-* 对于可变对象，如list、dict等，使用内置函数
+* 对于数据类型是是可变对象，如list、dict、字符串等，使用内置函数
 
 ```python
 b = [1]
@@ -79,3 +79,6 @@ local()
 print(b)
 ```
 
+* 获取全局变量 和 当前作用域
+print(globals())
+print(locals())
