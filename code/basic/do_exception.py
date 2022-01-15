@@ -96,7 +96,8 @@ for arg in sys.argv[1:]:
 5. 如果 finally 子句中包含 return 语句，则返回值来自 finally 子句的某个 return 语句的返回值，而不是来自 try 子句的 return 语句的返回值。
 """
 
-# 自定义异常类及其用法
+
+# 自定义异常类， 不建议直接继承BaseException类，因为它是为系统退出异常而保留的。假如直接继承BaseException，可能会导致自定义异常不会被捕获，而是直接发送信号退出程序运行，脱离了我们自定义异常类的初衷
 class BusinessError(Exception):
     # 自定义异常类型的初始化
     def __init__(self, msg):
@@ -112,16 +113,59 @@ try:
 except BusinessError as ex:
     print("错误是{}".format(ex))
 
-# raise
-
-# 获取异常的详细信息
-
+#  异常链 一般排查问题的话，我们可以直接从最下面开始排查，即从最后打印异常的地方开始定位问题。
+import traceback
 
 
-#  异常链
+class MyException(Exception):
+    pass
 
 
-https://bbs.huaweicloud.com/blogs/detail/289764
-https://docs.python.org/zh-cn/3/library/exceptions.html
-https://docs.python.org/zh-cn/3/tutorial/errors.html
-https://docs.python.org/zh-cn/3/library/exceptions.html#bltin-exceptions
+def thirdMethod():
+    raise MyException("自定义异常信息")
+
+
+def secondMethod():
+    thirdMethod()
+
+
+def firstMethod():
+    secondMethod()
+
+
+def main():
+    firstMethod()
+
+
+try:
+    main()
+except:
+    # 捕获异常，并将异常传播信息输出控制台
+    traceback.print_exc()
+    # 捕获异常，并将异常传播信息输出制定文件中
+    # traceback.print_exc(file=open("log.txt", "a"))
+
+
+def func():
+    raise ConnectionError
+
+
+# raise 语句支持可选的 from 子句，该子句用于启用链式异常，异常链会在 except 或 finally 子句内部引发异常时自动生成
+try:
+    func()
+except ConnectionError as exc:
+    raise RuntimeError('Failed to open database') from exc
+
+# 通过使用 from None 这样的写法来禁用异常链
+try:
+    open('database.sqlite')
+except OSError:
+    raise RuntimeError from None
+
+# https://docs.python.org/zh-cn/3/tutorial/errors.html
+# raise 语句支持强制触发指定的异常
+try:
+    raise NameError('HiThere')
+except NameError:
+    print('An exception flew by!')
+    raise
