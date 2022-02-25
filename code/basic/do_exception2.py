@@ -1,6 +1,6 @@
 """
 https://github.com/rmotr-curriculum/advanced-python-programming-questions/issues/16
-what does mean "exceptions must derive from BaseException"  无法捕获模拟异常，因为它不继承BaseException
+what does mean "exceptions must derive from BaseException"  无法捕获模拟异常，因为它不继承BaseException, 异常捕获必须在类里，不能在函数捕获
 
 When you use raise it must be given either a class that inherits from the Exception class, or an instance of one.
 For example ValueError is a builtin exception class, you can raise a ValueError using either of these methods:

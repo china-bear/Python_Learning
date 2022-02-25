@@ -1,30 +1,29 @@
 # -*- coding: UTF-8 -*-
 
-from MysqlUtil import MysqlUtil
-from HiveUtil import HiveUtil
+import os.path
+import re
+from utils.MysqlUtil import MysqlUtil
+from utils.HiveUtil import HiveUtil
 
 
-def run(str_hql, account, db, table, dimension, str_date, profile='test'):
-    task = AnalysisTask(str_hql, account, db, table, dimension, str_date, profile=profile)
-    return task.exec_task()
-
-
-class AnalysisTask:
-    def __init__(self, str_hql, account, db, table, dimension, str_date, profile):
-        self.str_hql = str_hql
+class Hive2Mysql:
+    def __init__(self, account, package, sql, db, table, dimension, str_date, profile='test'):
         self.account = account
+        self.package = package
+        self.sql = sql
         self.db = db
         self.table = table
         self.dimension = dimension
         self.str_date = str_date
         self.profile = profile
+        self.str_hql = self.sql_from_file()
 
-    def exec_task(self):
+    def run(self):
         # time.sleep(random.randint(1, 10))
 
         list_dict_data, schemas = self.__get_data()
         if not list_dict_data:
-            raise Exception("__getData Error")
+            raise Exception("__getData Error OR data empty")
 
         dict_sql = self.__get_sql(list_dict_data, schemas)
 
@@ -40,8 +39,8 @@ class AnalysisTask:
     # 取数据
     # ===========================================================================
     def __get_data(self):
-        ins_hive = HiveUtil()
-        str_hql = f'set mapred.job.name=Python:[SHBT-{self.account}][${self.table}][${self.str_date}]'
+        ins_hive = HiveUtil(account=self.account)
+        str_hql = f'set mapred.job.name=Spark:[SHBT-{self.account}][{self.table}][{self.str_date}]'
         ins_hive.execute(str_hql)
         return ins_hive.fetch_all(self.str_hql)
 
@@ -53,7 +52,7 @@ class AnalysisTask:
         columns = ', '.join(list_columns)
         values = '%s, ' * (len(list_columns) - 1) + '%s'
         ins_sql = f'insert into `{self.db}`.`{self.table}` ({columns}) VALUES ({values})'
-
+        print(ins_sql)
         ins_sql_data = []
         for dict_line in list_dict_data:
             line = []
@@ -102,6 +101,15 @@ class AnalysisTask:
             else:
                 print("写入{_start}-{_end}条成功".format(_start=i, _end=i + batch_size))
         return result
+
+    def sql_from_file(self):
+        f = './' + self.package.replace(r'.', r'/') + '/' + self.sql + '.sql'
+        print('sql file: ' + os.getcwd() + f)
+        if not os.path.exists(f):
+            raise ('参数错误:[SQL FILE {_file} NOT EXISTS.]'.format(_file=f))
+        with open(f, 'r', encoding='utf8') as f_handler:
+            str_hql = re.sub(r"(\r\n|\n)*;$", "", f_handler.read().rstrip().format(day=self.str_date))
+        return str_hql
 
 
 if __name__ == 'main':
