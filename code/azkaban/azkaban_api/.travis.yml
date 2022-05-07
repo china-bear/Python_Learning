@@ -1,0 +1,20 @@
+language: python
+python:
+  - '3.6'
+  - '2.7'
+install:
+  - pip install .
+script: nosetests
+jobs:
+  include:
+    - stage: deploy
+      if: tag =~ ^[\d\.]+$
+      script: skip
+      deploy:
+        provider: pypi
+        user: mtth
+        password:
+          secure: f/dKAT6ggBZnL7lE+w3besrt2klq+DmKpqWXsjj6pWe4mfYzBscQ876yjpl+obX385m3FvHfRQp2UgFpwKY5P9mI9bz01kSdXgaGtx2W1eXCmpFo4HZRIHYfgGy3SL4o/0HeJS+KEbBACtLahBHya38ym/qZTxAe+T5TviEqvCY=
+        on:
+          repo: mtth/azkaban
+          tags: true
