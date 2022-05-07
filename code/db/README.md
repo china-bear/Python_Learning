@@ -93,6 +93,12 @@ export PATH="/usr/local/anaconda3/bin:$PATH"
 /usr/local/anaconda3/bin/python3.8 /usr/local/anaconda3/bin/pip3 install mysqlclient
 /usr/local/anaconda3/bin/python3.8 /usr/local/anaconda3/bin/pip3 install thrift
 /usr/local/anaconda3/bin/python3.8 /usr/local/anaconda3/bin/pip3 install pyhive
+/usr/local/anaconda3/bin/python3.8 /usr/local/anaconda3/bin/pip3 install emoji
+
+> HiveServer1 需要增加下面模块
+
+/usr/local/anaconda3/bin/python3.8 /usr/local/anaconda3/bin/pip3 install sasl
+/usr/local/anaconda3/bin/python3.8 /usr/local/anaconda3/bin/pip3 install thrift_sasl
 
 3.其它
 > 验证安装包的位置 与  Python版本对应

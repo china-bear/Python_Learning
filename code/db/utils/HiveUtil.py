@@ -15,6 +15,8 @@ class HiveUtil(object):
         logging.basicConfig(level=logging.INFO,
                             format='%(asctime)s %(filename)s [line:%(lineno)d] %(levelname)s %(message)s',
                             datefmt='%Y-%m-%d %H:%M:%S')
+        if account not in cfg_hive_dict.keys():
+            raise ('字典KEY错误:[cfg_hive_dict {_account} KEY NOT EXISTS.]'.format(_account=account))
 
         self.account = account
 

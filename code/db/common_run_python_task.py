@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 import sys
+import os
 import time
 import socket
 import random
@@ -20,7 +21,6 @@ class Usage(Exception):
     def __init__(self, msg):
         self.msg = msg
 
-
 def main(argv=None):
     if argv is None:
         argv = sys.argv
@@ -28,13 +28,13 @@ def main(argv=None):
     account = None
     package = None
     module = None
-    date = None
+    day = None
     profile = None
     period = None
 
     try:
         try:
-            opts, args = getopt.getopt(argv[1:], "h", ["help", "account=", "package=", "module=", "date=", "profile=", "period="])
+            opts, args = getopt.getopt(argv[1:], "h", ["help", "account=", "package=", "module=", "day=", "profile=", "period="])
             for name, value in opts:
                 if name == '--account':
                     account = value
@@ -42,8 +42,8 @@ def main(argv=None):
                     package = value
                 if name == '--module':
                     module = value
-                if name == '--date':
-                    date = value
+                if name == '--day':
+                    day = value
                 if name == '--profile':
                     profile = value
                 if name == '--period':
@@ -51,8 +51,8 @@ def main(argv=None):
         except getopt.error as msg:
             raise Usage(msg)
 
-        logging.info('传入Task参数:[account={_account}, package={_package}, module={_module}, date={_date}, profile={_profile}, period={_period}]'
-                     .format(_account=account, _package=package, _module=module, _date=date, _profile=profile, _period=period))
+        logging.info('传入Task参数:[account={_account}, package={_package}, module={_module}, day={_day}, profile={_profile}, period={_period}]'
+                     .format(_account=account, _package=package, _module=module, _day=day, _profile=profile, _period=period))
 
         if not account:
             raise Usage('参数错误:[account={_account}]'.format(_account=account))
@@ -66,14 +66,14 @@ def main(argv=None):
         if not profile:
             raise Usage('参数错误:[profile={_profile}]'.format(_profile=profile))
 
-        if not date:
+        if not day:
             import datetime
             today = datetime.date.today()
             yesterday = today - datetime.timedelta(days=1)
-            date = str(yesterday)
+            day = str(yesterday)
         else:
             if period == 'night':
-                date = UTime.get_date_before_time(date, 1, format_type='%Y-%m-%d')
+                day = UTime.get_date_before_time(day, 1, format_type='%Y-%m-%d')
 
     except Usage as err:
         logging.error(err.msg)
@@ -83,15 +83,22 @@ def main(argv=None):
         # ==================================================
         # 启动调度任务
         # ==================================================
+        basedir = os.getcwd()
+        logging.info(f'Current root directory: {basedir}')
+
+        bin_dir = os.path.dirname(os.path.realpath(__file__))
+        os.chdir(bin_dir)
+        logging.info(f'Current working directory: {bin_dir}')
+
         fun = None
 
-        if date.__len__() == 10:
-            date = UTime.stamp2time(UTime.time2stamp(date, "%Y-%m-%d"), "%Y-%m-%d")
-        elif date.__len__() == 13:
-            date = UTime.stamp2time(UTime.time2stamp(date, "%Y-%m-%d %H"), "%Y-%m-%d %H")
+        if day.__len__() == 10:
+            day = UTime.stamp2time(UTime.time2stamp(day, "%Y-%m-%d"), "%Y-%m-%d")
+        elif day.__len__() == 13:
+            day = UTime.stamp2time(UTime.time2stamp(day, "%Y-%m-%d %H"), "%Y-%m-%d %H")
 
-        logging.info('运行Task参数:[account={_account}, package={_package}, module={_module}, date={_date}, profile={_profile}, '
-                     'period={_period}]'.format(_account=account, _package=package, _module=module, _date=date,
+        logging.info('运行Task参数:[account={_account}, package={_package}, module={_module}, day={_day}, profile={_profile}, '
+                     'period={_period}]'.format(_account=account, _package=package, _module=module, _day=day,
                                                 _profile=profile, _period=period))
         try:
             fun = importlib.import_module(package + '.' + module)
@@ -100,54 +107,61 @@ def main(argv=None):
             raise ModuleNotFoundError("Can not found Module:[module={_module}]".format(_module=module))
         else:
             time.sleep(random.randint(1, 60))
-            UDone.delete('ad', 'mba', 'dw', "{_done}_{_date}".format(_done=module, _date=date,))
-            status = fun.run(date, account=account, profile=profile)
+            UDone.delete('ad', 'mba', 'dw', "{_done}_{_day}".format(_done=module, _day=day,))
+            status = fun.run(account=account, package=package, module=module, day=day, profile=profile)
 
         if status:
-            UDone.create('ad', 'mba', 'dw', "{_done}_{_date}".format(
-                _done=module,
-                _date=date,
-            ))
+            if profile == 'prod':
+                UDone.create('ad', 'mba', 'dw', "{_done}_{_day}".format(
+                    _done=module,
+                    _day=day,
+                ))
+            else:
+                UDone.create('ad', 'mba', 'dw', "{_done}_{_profile}_{_day}".format(
+                    _done=module,
+                    _profile=profile,
+                    _day=day,
+                ))
 
             return 0
         else:
-            raise RuntimeError("{_done}_{_date}  create done failed!".format(_done=module, _date=date,))
+            raise RuntimeError("{_done}_{_day} {_profile} create done failed!".format(_done=module, _profile=profile, _day=day,))
     except BaseException as err:
-        title = '[{_module}][{_date}][{_profile}]'.format(
+        title = '[{_module}][{_day}][{_profile}]'.format(
             _module=module,
-            _date=date,
+            _day=day,
             _profile=profile,
         )
 
         app_content = """
         任务名称：{_module} 
-        执行时间：{_date} 
+        执行时间：{_day} 
         执行模式：{_profile} 
         执行主机：{_hostname}
         执行结果：失败！
         """.format(
             _module=module,
-            _date=date,
+            _day=day,
             _profile=profile,
             _hostname=socket.gethostname(),
         )
 
         content = """
         任务名称：{_module} <br>
-        执行时间：{_date} <br>
+        执行时间：{_day} <br>
         执行模式：{_profile} <br>
         执行主机：{_hostname} <br>
         异常信息：{_error} <br>
         执行结果：失败！
         """.format(
             _module=module,
-            _date=date,
+            _day=day,
             _profile=profile,
             _hostname=socket.gethostname(),
             _error=err,
         )
 
-        UOdin.send('mba_ba_task_alarm', title, app_content, content)
+        #UOdin.send('mba_ba_task_alarm', title, app_content, content)
         logging.exception(err)
         return 1
 

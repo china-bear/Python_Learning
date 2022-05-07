@@ -32,6 +32,35 @@ target_table=ods_bool_solution
 
 basepath=$(cd `dirname $0`; pwd)
 
+echo "------------------------------------------------------------------------------------------------"
+echo "-- 检查分区数据【SELECT COUNT(1) FROM galileo.report_end_flag WHERE date = '${tomorrow}' AND report_type = 'report_mvadx_dsp_total_later2' AND status = 1】"
+echo "------------------------------------------------------------------------------------------------"
+check_done=0
+check_num=0
+while [[ ${check_done} -lt 1 ]] && [[ ${check_num} -le 120 ]]
+do
+check_done=`${MYSQL_CMD} -h${source_host} -P${source_port} -u${source_username} -p${source_password} -D${source_database} -A -N -e "SELECT COUNT(1) FROM galileo.report_end_flag WHERE date =  date_add('${day}', interval 1 day) AND report_type = 'report_mvadx_dsp_total_later2' AND status = 1;"`
+
+if [[ ${check_done} -lt 1 ]] || [[ ${check_done} == '' ]];then
+  echo "check_done = ${check_done}"
+  sleep 5m
+fi
+let check_num++
+
+echo "已检测 ${check_num} 次, 检测中... "
+
+if [[ ${check_num} -gt 120 ]];then
+  echo "------------------------------------------------------------------------------------------------"
+  echo "-- 检查分区数据 失败"
+  echo "------------------------------------------------------------------------------------------------"
+  exit 1
+fi
+done
+echo "------------------------------------------------------------------------------------------------"
+echo "-- 检查分区数据 OK"
+echo "------------------------------------------------------------------------------------------------"
+
+
 /usr/local/bin/python2.7 ${basepath}/../DeleteDone.py --group=ad --project=mba --job=dw --done=${target_table} --date=${dt}
 
 # 目录
