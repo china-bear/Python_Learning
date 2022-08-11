@@ -67,7 +67,7 @@ def main(argv=None):
     try:
         # ==================================================
         # 执行sql任务
-        # python3.8  common_run_task.py --start_date='2022-04-13' --end_date=2022-04-16 --interval=5 --profile=prod
+        # python3.8  common_run_task.py --start_date='2022-01-01' --end_date='2022-03-31' --interval=5 --profile=prod
         # ==================================================
         basedir = os.getcwd()
         logging.info(f'Current root directory: {basedir}')

@@ -21,6 +21,7 @@ class Usage(Exception):
     def __init__(self, msg):
         self.msg = msg
 
+
 def main(argv=None):
     if argv is None:
         argv = sys.argv
@@ -82,6 +83,7 @@ def main(argv=None):
     try:
         # ==================================================
         # 启动调度任务
+        ## python3.8  common_run_python_task.py  --account=hdp_ads_dw --package=task.show.overall  --module=ba_zs_overall_analysis_bl_search --day=2022-02-22 --profile=dev
         # ==================================================
         basedir = os.getcwd()
         logging.info(f'Current root directory: {basedir}')
@@ -107,7 +109,7 @@ def main(argv=None):
             raise ModuleNotFoundError("Can not found Module:[module={_module}]".format(_module=module))
         else:
             time.sleep(random.randint(1, 60))
-            UDone.delete('ad', 'mba', 'dw', "{_done}_{_day}".format(_done=module, _day=day,))
+            UDone.delete('ad', 'mba', 'dw', "{_done}_{_day}".format(_done=module, _day=day, ))
             status = fun.run(account=account, package=package, module=module, day=day, profile=profile)
 
         if status:
@@ -125,7 +127,7 @@ def main(argv=None):
 
             return 0
         else:
-            raise RuntimeError("{_done}_{_day} {_profile} create done failed!".format(_done=module, _profile=profile, _day=day,))
+            raise RuntimeError("{_done}_{_day} {_profile} create done failed!".format(_done=module, _profile=profile, _day=day, ))
     except BaseException as err:
         title = '[{_module}][{_day}][{_profile}]'.format(
             _module=module,
@@ -161,7 +163,7 @@ def main(argv=None):
             _error=err,
         )
 
-        #UOdin.send('mba_ba_task_alarm', title, app_content, content)
+        # UOdin.send('mba_ba_task_alarm', title, app_content, content)
         logging.exception(err)
         return 1
 
