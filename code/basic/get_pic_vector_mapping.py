@@ -4,7 +4,7 @@ import os
 import urllib.request
 import json
 
-triton_imgemb_url = "http://gpudev02.adsys.zzzc2.qihoo.net:8020/v2/models/ensemble_r2d2_emb/versions/1/infer"
+triton_imgemb_url = "http://xxx:8020/v2/models/ensemble_r2d2_emb/versions/1/infer"
 
 
 def getData(pic):
