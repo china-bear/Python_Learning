@@ -4,10 +4,10 @@ import os
 import urllib.request
 import json
 
-triton_imgemb_url = "http://xxx:8020/v2/models/ensemble_r2d2_emb/versions/1/infer"
+triton_imgemb_url = "http://gpudev02.adsys.xxx.xxx.net:8020/v2/models/ensemble_r2d2_emb/versions/1/infer"
 
 
-def getData(pic):
+def get_data(pic):
     pic_url = [pic]
 
     request_data = {
@@ -23,7 +23,6 @@ def getData(pic):
     try:
         param = json.dumps(request_data)
         res = urllib.request.urlopen(urllib.request.Request(triton_imgemb_url, param.encode('utf-8'), {'Content-Type': 'application/json'}), timeout=3)
-        # result = json.loads(res.read())
         return res.read()
 
     except Exception as e:
@@ -46,10 +45,10 @@ def extract_res(res):
         return ""
 
 
-url = "http://p0.qhimg.com/t01888ff3ea1dccac01.png"
+url = "http://p0.img.com/t01888ff3ea1dccac01.png"
 
-extract_res(getData(url))
-
+rs = extract_res(get_data(url))
+print(rs)
 # for line in sys.stdin:
 #     line = line.strip()
 #     (pic_url,) = line.split('\t')
