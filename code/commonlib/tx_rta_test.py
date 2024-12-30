@@ -26,7 +26,7 @@ def url_param(_body, _token):
 if __name__ == '__main__':
 
     ts = str(int(time.time()))
-    print(ts)
+    print("ts: " + ts)
     data = {"data_list": [{
         "game_session": "CBgAA8JyfBuqS19Efq-n5tW4Vx3smqefolWeJj9REEsWhBo4vkc7n6Cns5jPYazmPOhgX-F_FfQuA",
         "timestamp": 17353205320,
@@ -37,19 +37,20 @@ if __name__ == '__main__':
         "count": 1
     }]}
 
-    token = "360_rta_test"
+    token = "123"
 
     try:
         body = json.dumps(data)
         print(body)
-        body_md5 = getMD5(json.dumps(body)).lower()
-        print(body_md5)
+
+        body_md5 = getMD5(body).lower()
+        print("body_md5" + ": " + body_md5)
 
         auth = getMD5(body_md5 + token + ts)
-        print(auth)
+        print("authorization" + ": " + auth)
 
-        qq_url = "https://xxx/cgi-bin/gamewxagpartnerrtaapi/game360costfeedback?time={_ts}&authorization={_authorization}".format(_ts=ts, _authorization=auth)
-        print(qq_url)
+        qq_url = "https://xxx/cgi-bin/gamewxagpartnerrtaapi/game360rtafeedback?time={_ts}&authorization={_authorization}".format(_ts=ts, _authorization=auth)
+        print("url: " + qq_url)
         res = request.urlopen(request.Request(qq_url, body.encode('utf-8'), {'Content-Type': 'application/json'}))
         print(res.read())
     except Exception as e:
